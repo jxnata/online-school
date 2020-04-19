@@ -11,6 +11,15 @@ const LessonSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    url: {
+        type: String,
+        required: true,
+    },
+    type: {
+        type: String,
+        enum: ['youtube', 'file', 'site'],
+        required: true,
+    },
     school: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'School',
@@ -23,9 +32,9 @@ const LessonSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Discipline',
     },
-    class: {
+    team: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Team',
     },
     enabled: {
         type: Boolean,

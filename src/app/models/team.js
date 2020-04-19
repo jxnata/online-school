@@ -2,7 +2,7 @@ const mongoose = require('../../database');
 const bcrypt = require('bcryptjs');
 const mongoosePaginate = require('mongoose-paginate');
 
-const ClassSchema = new mongoose.Schema({
+const TeamSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -21,8 +21,8 @@ const ClassSchema = new mongoose.Schema({
     },
 });
 
-ClassSchema.plugin(mongoosePaginate);
+TeamSchema.plugin(mongoosePaginate);
 
-const Class = mongoose.model('Class', ClassSchema);
+const Team = mongoose.model('Team', TeamSchema);
 
-module.exports = Class;
+module.exports = Team;

@@ -1,17 +1,17 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const multer = require('multer');
-const multerConfig = require('../../config/multer');
+const express = require('express')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer')
+const multer = require('multer')
+const multerConfig = require('../../config/multer')
 const authConfig = require('../../config/auth')
-const School = require('../models/school');
+const School = require('../models/school')
 
-const router = express.Router();
+const router = express.Router()
 
 function generateToken(params = {}) {
-    return jwt.sign(params, authConfig.secret);
-};
+    return jwt.sign(params, authConfig.secret)
+}
 
 function welcome_mail(email) {
     try {
@@ -23,8 +23,8 @@ function welcome_mail(email) {
                 user: process.env.MAIL_USER,
                 pass:process.env.MAIL_PASS
             }
-        };
-        var transporter = nodemailer.createTransport(smtpConfig);
+        }
+        var transporter = nodemailer.createTransport(smtpConfig)
         
         var mailOptions = {
             from: `"Escola Online" <${process.env.MAIL_USER}>`,
@@ -35,16 +35,16 @@ function welcome_mail(email) {
             html: '<h3>Bem vindo a Escola Online!</h3><p>Seu cadastro foi concuído, agora você pode fazer login no sistema.</p>'
         }
         
-        transporter.sendMail(mailOptions);
+        transporter.sendMail(mailOptions)
 
     } catch (err) {
-        console.log(err);
+        console.log(err)
     }
-};
+}
 
 router.post('/register', multer(multerConfig).single('image'), async  (req, res) => {
     try {
-        const { email, document } = req.body;
+        const { email, document } = req.body
     
         if (await School.findOne({ email }))
             return res.status(400).send({ error: 'Email já registrado.' })
@@ -55,45 +55,45 @@ router.post('/register', multer(multerConfig).single('image'), async  (req, res)
         const school = new School({
             ...req.body,
             nivel: 2,
-        });
+        })
         
         if (req.file){
-            school.image = req.file.location;
+            school.image = req.file.location
         }
 
-        await school.save();
-        school.password = undefined;
+        await school.save()
+        school.password = undefined
 
-        welcome_mail(school.email);
+        welcome_mail(school.email)
 
         return res.send({ 
             school,
             token: generateToken({ id: school.id }),
-        });
+        })
     } catch (err) {
         return res.status(400).send({ error: 'Falha ao registrar o usuário. Tente novamente mais tarde.', data: err })
     }
-});
+})
 
 router.post('/school_login', async (req, res) => {
     
     const { email, password } = req.body
 
-    var school = await School.findOne({ email }).select('+password').populate(['image']);
+    var school = await School.findOne({ email }).select('+password').populate(['image'])
 
     if (!school )
-        return res.status(404).send({ error: 'Usuário não encontrado. Tem certeza que informou o e-mail correto?' });
+        return res.status(404).send({ error: 'Usuário não encontrado. Tem certeza que informou o e-mail correto?' })
 
     if (!bcrypt.compareSync(password, school.password))
-        return res.status(400).send({ error: 'Senha incorreta.' });
+        return res.status(400).send({ error: 'Senha incorreta.' })
     
-    school.password = undefined;
+    school.password = undefined
     
-    res.send({ school,  token: generateToken({ id: school.id }) });
-});
+    res.send({ school,  token: generateToken({ id: school.id }) })
+})
 
 router.post('/forgot_password', async (req, res) => {
-    const { email } = req.body;
+    const { email } = req.body
 
     try {
         const school = await School.findOne({ email })
@@ -101,17 +101,17 @@ router.post('/forgot_password', async (req, res) => {
         if (!school)
             return res.status(404).send({ error: 'Email não encontrado.' })
 
-        const token = Math.random(6).toString(36).substring(7).toUpperCase();
+        const token = Math.random(6).toString(36).substring(7).toUpperCase()
         
-        const now = new Date();
-        now.setHours(now.getHours() + 2 );
+        const now = new Date()
+        now.setHours(now.getHours() + 2 )
 
         await  School.findByIdAndUpdate(school.id, {
             '$set': {
                 password_reset_token: token,
                 password_reset_expires: now,
             }
-        });
+        })
 
         var smtpConfig = {
             host: process.env.MAIL_HOST,
@@ -121,9 +121,9 @@ router.post('/forgot_password', async (req, res) => {
                 user: process.env.MAIL_USER,
                 pass:process.env.MAIL_PASS
             }
-        };
+        }
         
-        var transporter = nodemailer.createTransport(smtpConfig);
+        var transporter = nodemailer.createTransport(smtpConfig)
         
         var mailOptions = {
             from: process.env.MAIL_USER,
@@ -138,20 +138,20 @@ router.post('/forgot_password', async (req, res) => {
                 return res.status(400).send({ error: 'Não foi possivel resetar sua senha... Tente novamente!', data: error })
             }
             return res.status(200).send(`Enviamos um e-mail para ${email} com o seu código de recuperação.`)
-        });
+        })
         
     } catch (err) {
         return res.status(400).send({ error: 'Erro ao recuperar a senha, tente novamente mais tarde.', data: err })
     }
-});
+})
 
 router.post('/reset_password', async (req, res) => {
-    const { email, password } = req.body;
-    const {token}= req.query;
+    const { email, password } = req.body
+    const {token}= req.query
    
     try {
         const school = await School.findOne({ email })
-        .select('+password_reset_token password_reset_expires');
+        .select('+password_reset_token password_reset_expires')
 
         if (!school)
             return res.status(404).send({ error: 'Email não existe' })
@@ -159,20 +159,20 @@ router.post('/reset_password', async (req, res) => {
         if (token !== school.password_reset_token)
             return res.status(401).send({ error: 'Token invalido' })
         
-        const now = new Date();
+        const now = new Date()
 
         if (now > school.password_reset_expires)
             return res.status(403).send({ error: 'Token expirado, tente novamente.' })
 
-        school.password = password;
+        school.password = password
 
-        await school.save();
+        await school.save()
 
-        res.send();
+        res.send()
 
     } catch (err) {
         return res.status(400).send({ error: 'Erro ao recuperar a senha, tente novamente mais tarde.', data: err })
     }
-});
+})
 
-module.exports = app => app.use('/authentication', router);
+module.exports = app => app.use('/authentication', router)

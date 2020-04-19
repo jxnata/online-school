@@ -20,9 +20,9 @@ const TeacherSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Discipline',
     }],
-    class: [{
+    team: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Team',
     }],
     school: {
         type: mongoose.Schema.Types.ObjectId,

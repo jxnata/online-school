@@ -20,9 +20,9 @@ const StudentSchema = new mongoose.Schema({
         type: String,
         default: 'https://escolaonline.s3.amazonaws.com/default.png'
     },
-    class: {
+    team: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Team',
     },
     school: {
         type: mongoose.Schema.Types.ObjectId,
