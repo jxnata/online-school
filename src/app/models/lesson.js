@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const mongoosePaginate = require('mongoose-paginate');
 
 const LessonSchema = new mongoose.Schema({
-    name: {
+    title: {
         type: String,
         required: true,
     },
