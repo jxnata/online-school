@@ -65,9 +65,9 @@ router.delete('/:id', async (req, res) => {
 })
 
 // ativar
-router.put('/enable', async (req, res) => {
+router.patch('/enable/:id', async (req, res) => {
     try {
-        const discipline = await Discipline.findByIdAndUpdate(req.query.user_id, {
+        const discipline = await Discipline.findByIdAndUpdate(req.param.id, {
             nivel: 2,
         }, { new: true })
 
@@ -79,9 +79,9 @@ router.put('/enable', async (req, res) => {
 })
 
 // desativar
-router.put('/disable', async (req, res) => {
+router.patch('/disable/:id', async (req, res) => {
     try {
-        const discipline = await Discipline.findByIdAndUpdate(req.query.user_id, {
+        const discipline = await Discipline.findByIdAndUpdate(req.param.id, {
             nivel: 3,
         }, { new: true })
         

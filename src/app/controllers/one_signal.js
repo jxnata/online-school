@@ -1,7 +1,7 @@
 module.exports = function() {
     this.sendNotification = function (titulo, msg, usuarios) {
         var data = { 
-            app_id: "4b2ede88-1938-4a39-bebf-8b708034fd38",
+            app_id: "---APP_ID---",
             headings: { "en": titulo },
             contents: { "en": msg },
             include_player_ids: usuarios,
@@ -12,7 +12,7 @@ module.exports = function() {
 
         var headers = {
             "Content-Type": "application/json; charset=utf-8",
-            "Authorization": "Basic MDIxM2UyYmYtOWM5OS00Y2QzLThjMTktZGU4MzE1MmIyYzM4"
+            "Authorization": "Basic ---API_KEY---"
         };
         
         var options = {

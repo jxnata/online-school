@@ -65,7 +65,7 @@ router.delete('/:id', async (req, res) => {
 })
 
 // ativar push
-router.put('/enable_push', async (req, res) => {
+router.patch('/enable_push', async (req, res) => {
     const { player_id } = req.query
     try {
         const student = await Student.findByIdAndUpdate(req.user_id, { player_id }, { new: true })
@@ -78,7 +78,7 @@ router.put('/enable_push', async (req, res) => {
 })
 
 // desativar push
-router.put('/disable_push', async (req, res) => {
+router.patch('/disable_push', async (req, res) => {
     try {
         const student = await Student.findByIdAndUpdate(req.user_id, { player_id: '' }, { new: true })
 
@@ -90,9 +90,9 @@ router.put('/disable_push', async (req, res) => {
 })
 
 // ativar
-router.put('/enable', async (req, res) => {
+router.patch('/enable/:id', async (req, res) => {
     try {
-        const student = await Student.findByIdAndUpdate(req.query.user_id, {
+        const student = await Student.findByIdAndUpdate(req.param.id, {
             nivel: 2,
         }, { new: true })
 
@@ -104,9 +104,9 @@ router.put('/enable', async (req, res) => {
 })
 
 // desativar
-router.put('/disable', async (req, res) => {
+router.patch('/disable/:id', async (req, res) => {
     try {
-        const student = await Student.findByIdAndUpdate(req.query.user_id, {
+        const student = await Student.findByIdAndUpdate(req.param.id, {
             nivel: 3,
         }, { new: true })
         
